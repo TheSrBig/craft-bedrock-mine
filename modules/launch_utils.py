@@ -344,7 +344,7 @@ def prepare_environment():
     clip_package = os.environ.get('CLIP_PACKAGE', "https://github.com/openai/CLIP/archive/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1.zip")
     openclip_package = os.environ.get('OPENCLIP_PACKAGE', "https://github.com/mlfoundations/open_clip/archive/bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b.zip")
 
-    assets_repo = os.environ.get('ASSETS_REPO', "https://github.com/TheSrBig/craft-bedrock-mine-assets.git")
+    assets_repo = os.environ.get('ASSETS_REPO', "https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets")
     craft_bedrock_repo = os.environ.get('CRAFT_BEDROCK_REPO', "https://github.com/Stability-AI/craftbedrock.git")
     craft_bedrock_xl_repo = os.environ.get('CRAFT_BEDROCK_XL_REPO', "https://github.com/Stability-AI/generative-models.git")
     k_bedrock_repo = os.environ.get('K_BEDROCK_REPO', 'https://github.com/crowsonkb/k-bedrock.git')
@@ -407,7 +407,7 @@ def prepare_environment():
 
     os.makedirs(os.path.join(script_path, dir_repos), exist_ok=True)
 
-    git_clone(assets_repo, repo_dir('craft-bedrock-mine-assets'), "assets", assets_commit_hash)
+    git_clone(assets_repo, repo_dir('stable-diffusion-webui-assets'), "assets", assets_commit_hash)
     git_clone(craft_bedrock_repo, repo_dir('craft-bedrock-stability-ai'), "Stable Diffusion", craft_bedrock_commit_hash)
     git_clone(craft_bedrock_xl_repo, repo_dir('generative-models'), "Stable Diffusion XL", craft_bedrock_xl_commit_hash)
     git_clone(k_bedrock_repo, repo_dir('k-bedrock'), "K-bedrock", k_bedrock_commit_hash)

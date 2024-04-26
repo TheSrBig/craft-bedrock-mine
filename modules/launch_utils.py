@@ -1,4 +1,4 @@
-# this scripts installs necessary requirements and launches main program in mine.py
+# this scripts installs necessary requirements and launches main program in webui.py
 import logging
 import re
 import subprocess
@@ -25,7 +25,7 @@ index_url = os.environ.get('INDEX_URL', "")
 dir_repos = "repositories"
 
 # Whether to default to printing command output
-default_command_live = (os.environ.get('MINE_LAUNCH_LIVE_OUTPUT') == "1")
+default_command_live = (os.environ.get('WEBUI_LAUNCH_LIVE_OUTPUT') == "1")
 
 os.environ.setdefault('GRADIO_ANALYTICS_ENABLED', 'False')
 
@@ -55,7 +55,7 @@ and delete current Python and "venv" folder in WebUI's directory.
 
 You can download 3.10 Python from here: https://www.python.org/downloads/release/python-3106/
 
-{"Alternatively, use a binary release of WebUI: https://github.com/TheSrBig/craft-bedrock-mine/releases/tag/v1.0.0-pre" if is_windows else ""}
+{"Alternatively, use a binary release of WebUI: https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.0.0-pre" if is_windows else ""}
 
 Use --skip-python-version-check to suppress this warning.
 """)
@@ -210,7 +210,7 @@ def git_pull_recursive(dir):
 def version_check(commit):
     try:
         import requests
-        commits = requests.get('https://api.github.com/repos/TheSrBig/craft-bedrock-mine/branches/master').json()
+        commits = requests.get('https://api.github.com/repos/AUTOMATIC1111/stable-diffusion-webui/branches/master').json()
         if commit != "<none>" and commits['commit']['sha'] != commit:
             print("--------------------------------------------------------")
             print("| You are not up to date with the most recent release. |")
@@ -255,14 +255,14 @@ def list_extensions(settings_file):
     disabled_extensions = set(settings.get('disabled_extensions', []))
     disable_all_extensions = settings.get('disable_all_extensions', 'none')
 
-    if disable_all_extensions != 'none' or args.disable_extra_extensions or args.disable_all_extensions or not os.path.imcir(extensions_dir):
+    if disable_all_extensions != 'none' or args.disable_extra_extensions or args.disable_all_extensions or not os.path.isdir(extensions_dir):
         return []
 
     return [x for x in os.listdir(extensions_dir) if x not in disabled_extensions]
 
 
 def run_extensions_installers(settings_file):
-    if not os.path.imcir(extensions_dir):
+    if not os.path.isdir(extensions_dir):
         return
 
     with startup_timer.subcategory("run extensions installers"):
@@ -271,7 +271,7 @@ def run_extensions_installers(settings_file):
 
             path = os.path.join(extensions_dir, dirname_extension)
 
-            if os.path.imcir(path):
+            if os.path.isdir(path):
                 run_extension_installer(path)
                 startup_timer.record(dirname_extension)
 
@@ -335,7 +335,7 @@ def prepare_environment():
             # Using official IPEX release for linux since it's already an AOT build.
             # However, users still have to install oneAPI toolkit and activate oneAPI environment manually.
             # See https://intel.github.io/intel-extension-for-pytorch/index.html#installation for details.
-            torch_index_url = os.environ.get('TORCH_INDEX_URL', "https://pytorch-extension.intel.com/release-whl/craft/xpu/us/")
+            torch_index_url = os.environ.get('TORCH_INDEX_URL', "https://pytorch-extension.intel.com/release-whl/stable/xpu/us/")
             torch_command = os.environ.get('TORCH_COMMAND', f"pip install torch==2.0.0a0 intel-extension-for-pytorch==2.0.110+gitba7f6c1 --extra-index-url {torch_index_url}")
     requirements_file = os.environ.get('REQS_FILE', "requirements_versions.txt")
     requirements_file_for_npu = os.environ.get('REQS_FILE_FOR_NPU', "requirements_npu.txt")
@@ -344,22 +344,22 @@ def prepare_environment():
     clip_package = os.environ.get('CLIP_PACKAGE', "https://github.com/openai/CLIP/archive/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1.zip")
     openclip_package = os.environ.get('OPENCLIP_PACKAGE', "https://github.com/mlfoundations/open_clip/archive/bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b.zip")
 
-    assets_repo = os.environ.get('ASSETS_REPO', "https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets")
-    craft_bedrock_repo = os.environ.get('CRAFT_BEDROCK_REPO', "https://github.com/Stability-AI/craftbedrock.git")
-    craft_bedrock_xl_repo = os.environ.get('CRAFT_BEDROCK_XL_REPO', "https://github.com/Stability-AI/generative-models.git")
-    k_bedrock_repo = os.environ.get('K_BEDROCK_REPO', 'https://github.com/crowsonkb/k-bedrock.git')
+    assets_repo = os.environ.get('ASSETS_REPO', "https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets.git")
+    stable_diffusion_repo = os.environ.get('STABLE_DIFFUSION_REPO', "https://github.com/Stability-AI/stablediffusion.git")
+    stable_diffusion_xl_repo = os.environ.get('STABLE_DIFFUSION_XL_REPO', "https://github.com/Stability-AI/generative-models.git")
+    k_diffusion_repo = os.environ.get('K_DIFFUSION_REPO', 'https://github.com/crowsonkb/k-diffusion.git')
     blip_repo = os.environ.get('BLIP_REPO', 'https://github.com/salesforce/BLIP.git')
 
     assets_commit_hash = os.environ.get('ASSETS_COMMIT_HASH', "6f7db241d2f8ba7457bac5ca9753331f0c266917")
-    craft_bedrock_commit_hash = os.environ.get('CRAFT_BEDROCK_COMMIT_HASH', "cf1d67a6fd5ea1aa600c4df58e5b47da45f6bdbf")
-    craft_bedrock_xl_commit_hash = os.environ.get('CRAFT_BEDROCK_XL_COMMIT_HASH', "45c443b316737a4ab6e40413d7794a7f5657c19f")
-    k_bedrock_commit_hash = os.environ.get('K_BEDROCK_COMMIT_HASH', "ab527a9a6d347f364e3d185ba6d714e22d80cb3c")
+    stable_diffusion_commit_hash = os.environ.get('STABLE_DIFFUSION_COMMIT_HASH', "cf1d67a6fd5ea1aa600c4df58e5b47da45f6bdbf")
+    stable_diffusion_xl_commit_hash = os.environ.get('STABLE_DIFFUSION_XL_COMMIT_HASH', "45c443b316737a4ab6e40413d7794a7f5657c19f")
+    k_diffusion_commit_hash = os.environ.get('K_DIFFUSION_COMMIT_HASH', "ab527a9a6d347f364e3d185ba6d714e22d80cb3c")
     blip_commit_hash = os.environ.get('BLIP_COMMIT_HASH', "48211a1594f1321b00f14c9f7a5b4813144b2fb9")
 
     try:
-        # the existence of this file is a signal to mine.sh/bat that mine needs to be restarted when it stops execution
+        # the existence of this file is a signal to webui.sh/bat that webui needs to be restarted when it stops execution
         os.remove(os.path.join(script_path, "tmp", "restart"))
-        os.environ.setdefault('MC_MINE_RESTARTING', '1')
+        os.environ.setdefault('SD_WEBUI_RESTARTING', '1')
     except OSError:
         pass
 
@@ -408,9 +408,9 @@ def prepare_environment():
     os.makedirs(os.path.join(script_path, dir_repos), exist_ok=True)
 
     git_clone(assets_repo, repo_dir('stable-diffusion-webui-assets'), "assets", assets_commit_hash)
-    git_clone(craft_bedrock_repo, repo_dir('craft-bedrock-stability-ai'), "Stable Diffusion", craft_bedrock_commit_hash)
-    git_clone(craft_bedrock_xl_repo, repo_dir('generative-models'), "Stable Diffusion XL", craft_bedrock_xl_commit_hash)
-    git_clone(k_bedrock_repo, repo_dir('k-bedrock'), "K-bedrock", k_bedrock_commit_hash)
+    git_clone(stable_diffusion_repo, repo_dir('stable-diffusion-stability-ai'), "Stable Diffusion", stable_diffusion_commit_hash)
+    git_clone(stable_diffusion_xl_repo, repo_dir('generative-models'), "Stable Diffusion XL", stable_diffusion_xl_commit_hash)
+    git_clone(k_diffusion_repo, repo_dir('k-diffusion'), "K-diffusion", k_diffusion_commit_hash)
     git_clone(blip_repo, repo_dir('BLIP'), "BLIP", blip_commit_hash)
 
     startup_timer.record("clone repositores")
@@ -461,12 +461,12 @@ def configure_for_tests():
 
 
 def start():
-    print(f"Launching {'API server' if '--nomine' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
-    import mine
-    if '--nomine' in sys.argv:
-        mine.api_only()
+    print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
+    import webui
+    if '--nowebui' in sys.argv:
+        webui.api_only()
     else:
-        mine.mine()
+        webui.webui()
 
 
 def dump_sysinfo():
